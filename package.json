@@ -1,0 +1,25 @@
+{
+	"name": "link-shortener",
+	"version": "0.0.0",
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.19",
+		"@types/node": "^24.6.2",
+		"drizzle-kit": "^0.31.5",
+		"typescript": "^5.5.2",
+		"vitest": "~3.2.0",
+		"wrangler": "^4.42.0"
+	},
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"cf-typegen": "wrangler types"
+	},
+	"dependencies": {
+		"bcryptjs": "^3.0.2",
+		"drizzle-orm": "^0.44.6",
+		"jose": "^6.1.0"
+	}
+}
