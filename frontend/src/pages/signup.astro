@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AuthForm from '../components/auth-form';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+---
+
+<Layout title="Sign Up - Link Shortener">
+	<main class="container mx-auto flex min-h-screen items-center justify-center">
+		<Card className="w-full max-w-md">
+			<CardHeader>
+				<CardTitle>Create an account</CardTitle>
+				<CardDescription>Enter your details to create your account</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<AuthForm client:load type="signup" />
+			</CardContent>
+			<CardFooter className="flex justify-between">
+				<p class="text-sm text-muted-foreground">
+					Already have an account?
+					<a href="/login" class="ml-1 font-medium text-primary hover:underline">Sign in</a>
+				</p>
+			</CardFooter>
+		</Card>
+	</main>
+</Layout>
