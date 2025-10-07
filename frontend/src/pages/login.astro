@@ -1,0 +1,29 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import AuthForm from '@/components/auth-form';
+---
+
+<Layout>
+	<script>
+		import type { ApiResponse } from '@shared/types';
+		import { toast } from 'sonner';
+
+		fetch('http://localhost:8787/api/me')
+			.then((res) => res.json())
+			.then((data: ApiResponse) => {
+				if (data.error) {
+					toast.error('Error getting info');
+				}
+
+				if (data.success) {
+					window.location.href = '/';
+				}
+			})
+			.catch(() => {
+				toast.error('Error getting info');
+			});
+	</script>
+	<div class="flex flex-col items-center justify-center w-full h-screen max-w-6xl">
+		<AuthForm client:load />
+	</div>
+</Layout>

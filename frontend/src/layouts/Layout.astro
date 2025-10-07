@@ -1,5 +1,6 @@
 ---
 import Nav from '@/components/nav';
+import { Toaster } from '@/components/ui/sonner';
 import '@/styles/global.css';
 ---
 
@@ -31,7 +32,8 @@ import '@/styles/global.css';
 		<title>Link Shortener</title>
 	</head>
 	<body class="flex flex-col items-center">
-		<Nav />
+		<Nav client:load />
 		<slot />
+		<Toaster client:load />
 	</body>
 </html>

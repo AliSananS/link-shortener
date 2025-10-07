@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { LoginRequest, SignupRequest } from '@/types';
 import { encryptSession, decryptSession, getCookie } from './session';
+import type { SignupResponseError, LoginResponseError, ApiResponse } from '@shared/types';
 
 const { users, sessions } = schema;
 
@@ -14,17 +15,34 @@ type dbType = DrizzleD1Database<typeof schema> & {
 
 export async function signup(req: Request, db: dbType): Promise<Response> {
 	const { email, password, name } = (await req.json()) satisfies SignupRequest;
-	if (!email || !password || !name) return new Response('Missing fields', { status: 400 });
+	if (!email || !password || !name) {
+		const body: ApiResponse<null, SignupResponseError> = {
+			success: false,
+			code: 'MISSING_CREDENTIALS',
+			error: 'Missing fields',
+		};
+		return Response.json(body, { status: 400 });
+	}
 
 	if (!validateEmail(email)) {
-		return new Response('Invalid email format', { status: 400 });
+		const body: ApiResponse<null, SignupResponseError> = {
+			success: false,
+			code: 'INVALID_EMAIL',
+			error: 'Invalid email format',
+		};
+		return Response.json(body, { status: 400 });
 	}
 
 	const hash = await bcrypt.hash(password, 10);
 
 	const user = await db.query.users.findFirst({ where: eq(users.email, email) });
 	if (user !== undefined) {
-		return new Response('User exists', { status: 409 });
+		const body: ApiResponse<null, SignupResponseError> = {
+			success: false,
+			code: 'EMAIL_EXISTS',
+			error: 'User already exists',
+		};
+		return Response.json(body, { status: 409 });
 	}
 
 	const userId = nanoid();
@@ -46,7 +64,12 @@ export async function signup(req: Request, db: dbType): Promise<Response> {
 
 	const encrypted = await encryptSession(sessionId, process.env.SESSION_SECRET);
 
-	return new Response('User created', {
+	const body: ApiResponse<null> = {
+		success: true,
+		message: 'User created successfully',
+	};
+
+	return Response.json(body, {
 		status: 201,
 		headers: {
 			'Set-Cookie': `session=${encrypted}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`,
@@ -57,16 +80,38 @@ export async function signup(req: Request, db: dbType): Promise<Response> {
 export async function login(req: Request, db: dbType, env: Env): Promise<Response> {
 	const body = (await req.json()) satisfies LoginRequest;
 	const { email, password } = body;
+	console.log('body:', body);
 
-	if (!email || !password) return new Response('Missing credentials', { status: 400 });
+	if (!email || !password) {
+		const resBody: ApiResponse<null, LoginResponseError> = {
+			success: false,
+			code: 'MISSING_CREDENTIALS',
+			error: 'Missing credentials',
+		};
+		return Response.json(resBody, { status: 400 });
+	}
 
 	const user = await db.query.users.findFirst({
 		where: eq(users.email, email),
 	});
-	if (!user) return new Response('Invalid email or password', { status: 401 });
+	if (!user) {
+		const resBody: ApiResponse<null, LoginResponseError> = {
+			success: false,
+			code: 'EMAIL_NOT_FOUND',
+			error: 'Invalid email or password',
+		};
+		return Response.json(resBody, { status: 401 });
+	}
 
 	const valid = await bcrypt.compare(password, user.passwordHash);
-	if (!valid) return new Response('Invalid email or password', { status: 401 });
+	if (!valid) {
+		const resBody: ApiResponse<null, LoginResponseError> = {
+			success: false,
+			code: 'INVALID_CREDENTIALS',
+			error: 'Invalid email or password',
+		};
+		return Response.json(resBody, { status: 401 });
+	}
 
 	const sessionId = nanoid();
 	await db.insert(sessions).values({
@@ -78,7 +123,12 @@ export async function login(req: Request, db: dbType, env: Env): Promise<Respons
 
 	const encrypted = await encryptSession(sessionId, env.SESSION_SECRET);
 
-	return new Response('Logged in', {
+	const resBody: ApiResponse<null> = {
+		success: true,
+		message: 'Logged in successfully',
+	};
+
+	return Response.json(resBody, {
 		headers: {
 			'Set-Cookie': `session=${encrypted}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`,
 		},
@@ -87,12 +137,24 @@ export async function login(req: Request, db: dbType, env: Env): Promise<Respons
 
 export async function logout(req: Request, db: dbType): Promise<Response> {
 	const cookie = req.headers.get('Cookie');
-	if (!cookie) return new Response('No session', { status: 401 });
+	if (!cookie) {
+		const resBody: ApiResponse<null, LoginResponseError> = {
+			success: false,
+			code: 'MISSING_CREDENTIALS',
+			error: 'No session found',
+		};
+		return Response.json(resBody, { status: 401 });
+	}
 
 	const sessionId = await decryptSession(getCookie(cookie, 'session'), process.env.SESSION_SECRET);
 	if (sessionId) await db.delete(sessions).where(eq(sessions.id, sessionId));
 
-	return new Response('Logged out', {
+	const resBody: ApiResponse<null> = {
+		success: true,
+		message: 'Logged out successfully',
+	};
+
+	return Response.json(resBody, {
 		headers: { 'Set-Cookie': 'session=; Path=/; Max-Age=0;' },
 	});
 }

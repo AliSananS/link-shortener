@@ -14,4 +14,8 @@ export default defineConfig({
 	},
 	outDir: 'out',
 	output: 'static',
+	server: {
+		host: true,
+		port: 4000,
+	},
 });
