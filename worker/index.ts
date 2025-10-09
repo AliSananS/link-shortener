@@ -29,7 +29,6 @@ export default {
 		}
 
 		if (env.SERVER === 'development') {
-			console.log('Dev mode: proxying dev server');
 			try {
 				return await fetch('http://localhost:4000' + path, req);
 			} catch (err) {
