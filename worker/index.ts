@@ -1,16 +1,9 @@
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
-import { login, logout, signup } from './login';
-import { eq } from 'drizzle-orm';
-import { users } from '@/db/schema';
-import { decryptSession, getCookie } from './session';
-import type { ApiResponse, UserPublic } from '@shared/types';
-
-const { sessions } = schema;
+import { login, logout, signup, me } from './session';
 
 export default {
 	async fetch(req: Request, env: Env): Promise<Response> {
-		console.log('Session secret:', env.SESSION_SECRET);
 		const db = drizzle(env.db, { schema });
 		const url = new URL(req.url);
 		const path = url.pathname;
@@ -35,6 +28,15 @@ export default {
 			return new Response('Method not allowed', { status: 405 });
 		}
 
+		if (env.SERVER === 'development') {
+			console.log('Dev mode: proxying dev server');
+			try {
+				return await fetch('http://localhost:4000' + path, req);
+			} catch (err) {
+				return new Response('Dev server not running', { status: 500 });
+			}
+		}
+
 		// Try to serve static assets
 		try {
 			return await env.ASSETS.fetch(req);
@@ -43,40 +45,3 @@ export default {
 		}
 	},
 };
-
-async function me(req: Request, db: any, env: Env): Promise<Response> {
-	const cookie = req.headers.get('Cookie');
-	if (!cookie) {
-		const body: ApiResponse<null> = { success: false, error: 'Not logged in' };
-		return Response.json(body, { status: 401 });
-	}
-
-	const sessionEnc = getCookie(cookie, 'session');
-	const sessionId = await decryptSession(sessionEnc, env.SESSION_SECRET);
-	if (!sessionId) {
-		const body: ApiResponse<null> = { success: false, error: 'Invalid session' };
-		return Response.json(body, { status: 401 });
-	}
-
-	const session = await db.query.sessions.findFirst({ where: eq(sessions.id, sessionId) });
-	if (!session || session.expiresAt < Date.now()) {
-		const body: ApiResponse<null> = { success: false, error: 'Session expired' };
-		return Response.json(body, { status: 401 });
-	}
-
-	const user = await db.query.users.findFirst({ where: eq(users.id, session.userId) });
-	if (!user) {
-		const body: ApiResponse<null> = { success: false, error: 'User not found' };
-		return Response.json(body, { status: 404 });
-	}
-
-	const payload: UserPublic = {
-		email: user.email,
-		name: user.name,
-		createdAt: user.createdAt,
-	};
-
-	const body: ApiResponse<UserPublic> = { success: true, data: payload };
-
-	return Response.json(body);
-}

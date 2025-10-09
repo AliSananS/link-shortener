@@ -93,7 +93,6 @@ export default function AuthForm() {
 				body: JSON.stringify(payload),
 			});
 
-			console.log('Response:', response);
 			// try to parse JSON, but handle non-JSON responses gracefully
 			let data: ApiResponse<unknown, SignupResponseError | LoginResponseError> | null = null;
 			try {

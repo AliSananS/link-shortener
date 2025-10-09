@@ -8,11 +8,11 @@ import AuthForm from '@/components/auth-form';
 		import type { ApiResponse } from '@shared/types';
 		import { toast } from 'sonner';
 
-		fetch('http://localhost:8787/api/me')
+		fetch('/api/me')
 			.then((res) => res.json())
 			.then((data: ApiResponse) => {
 				if (data.error) {
-					toast.error('Error getting info');
+					return;
 				}
 
 				if (data.success) {

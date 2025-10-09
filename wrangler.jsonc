@@ -12,10 +12,10 @@
 		"enabled": true
 	},
 
-	"assets": {
-		"binding": "ASSETS",
-		"directory": "./frontend/out"
-	},
+	// "assets": {
+	// 	"binding": "ASSETS",
+	// 	"directory": "./frontend/out"
+	// },
 
 	// ==== Workers KV Configuration ====
 	"kv_namespaces": [
