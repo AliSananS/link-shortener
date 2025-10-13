@@ -1,8 +1,8 @@
 import type { Config } from 'drizzle-kit';
 
 export default {
-	schema: '@/db/schema.ts',
-	out: '@/drizzle',
+	schema: './worker/db/schema.ts',
+	out: './worker/drizzle',
 	driver: 'd1-http',
 	dbCredentials: {
 		accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,

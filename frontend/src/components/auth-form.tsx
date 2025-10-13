@@ -9,10 +9,6 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import type { ApiResponse, SignupResponseError, LoginResponseError } from '@shared/types';
 
-const isDev = process.env.NODE_ENV === 'development';
-
-const host = isDev ? 'http://localhost:8787' : '';
-
 const VALIDATION_RULES = [
 	{
 		message: 'Password must be at least 8 characters',
@@ -85,11 +81,10 @@ export default function AuthForm() {
 		const payload = isLogin ? { email, password } : { email, password, name };
 
 		try {
-			const response = await fetch(`${host}${endpoint}`, {
+			const response = await fetch(endpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include', // ensure cookies (Set-Cookie) are accepted
-				mode: isDev ? 'no-cors' : 'cors',
 				body: JSON.stringify(payload),
 			});
 

@@ -4,7 +4,12 @@
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
+		"dev:worker": "wrangler dev",
+		"dev:frontend": "bun --cwd=./frontend run dev",
+		"dev": "concurrently -n astro,worker -c blue,red \"bun run dev:frontend\" \"bun run dev:worker\"",
+		"build:frontend": "bun --cwd=./frontend run build",
+		"build:worker": "wrangler build",
+		"build": "bun run build:frontend && bun run build:worker",
 		"start": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types"
@@ -17,10 +22,11 @@
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.8.19",
 		"@types/node": "^24.6.2",
+		"concurrently": "^9.2.1",
 		"drizzle-kit": "^0.31.5",
 		"shadcn": "^3.4.0",
 		"typescript": "^5.5.2",
 		"vitest": "~3.2.0",
-		"wrangler": "^4.42.0"
+		"wrangler": "^4.42.2"
 	}
 }

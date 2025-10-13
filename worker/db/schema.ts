@@ -16,7 +16,7 @@ export const sessions = sqliteTable('sessions', {
 });
 
 export const links = sqliteTable('links', {
-	key: text().notNull(), // short link keyname
+	shortCode: text('short_code').notNull(), // short link key
 	userId: text('user_id').references(() => users.id),
-	expiresAt: integer('expires_at').notNull(),
+	expiresAt: integer('expires_at'),
 });

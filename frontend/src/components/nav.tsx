@@ -12,7 +12,7 @@ export default function Nav() {
 
 	useEffect(() => {
 		typeof window !== undefined && setPathname(window.location.pathname);
-		fetch('/api/me', { mode: 'no-cors' })
+		fetch('/api/me')
 			.then((res) => res.json())
 			.then((data: ApiResponse) => {
 				if (data.success) {
@@ -48,7 +48,9 @@ export default function Nav() {
 			<div className="flex flex-row justify-end gap-4 [&>*]:cursor-pointer [&>*]:hover:underline">
 				{navItems.map((link) =>
 					link.name === 'login' && isLoggedIn ? (
-						<button onClick={handleLogout}>Logout</button>
+						<button key={link.name} onClick={handleLogout}>
+							Logout
+						</button>
 					) : (
 						<a
 							key={link.name}

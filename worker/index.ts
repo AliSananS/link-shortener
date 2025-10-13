@@ -1,11 +1,14 @@
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
-import { login, logout, signup, me } from './session';
+import { login, logout, signup, me, getSession } from '@/session';
+import { createLink, redirect, removeLink } from '@/links';
+
+const protectedRoutes = ['/api/me', '/api/logout', '/api/create-link', '/remove-link'] as const;
 
 export default {
 	async fetch(req: Request, env: Env): Promise<Response> {
-		const db = drizzle(env.db, { schema });
 		const url = new URL(req.url);
+		const db = drizzle(env.db, { schema });
 		const path = url.pathname;
 		const method = req.method;
 
@@ -18,29 +21,43 @@ export default {
 				case '/api/login':
 					if (method === 'POST') return login(req, db, env);
 					break;
-				case '/api/logout':
-					if (method === 'POST') return logout(req, db);
-					break;
-				case '/api/me':
-					if (method === 'GET') return me(req, db, env);
-					break;
 			}
-			return new Response('Method not allowed', { status: 405 });
+
+			// Protected routes
+			if (protectedRoutes.includes(path as (typeof protectedRoutes)[number])) {
+				const session = await getSession(req, db, env);
+				if (!session) {
+					return new Response('Unauthorized', { status: 401 });
+				}
+
+				switch (path as (typeof protectedRoutes)[number]) {
+					case '/api/logout':
+						if (method === 'POST') return logout(req, db);
+						break;
+					case '/api/me':
+						if (method === 'GET') return me(req, db, env);
+						break;
+					case '/api/create-link':
+						if (method === 'POST') return createLink(req, db, env, session);
+						break;
+					case '/remove-link':
+						if (method === 'DELETE') {
+							return removeLink(req, db, env, session);
+						}
+				}
+			}
+
+			return new Response('Bad request', { status: 400 });
 		}
 
-		if (env.SERVER === 'development') {
-			try {
-				return await fetch('http://localhost:4000' + path, req);
-			} catch (err) {
-				return new Response('Dev server not running', { status: 500 });
-			}
-		}
-
-		// Try to serve static assets
-		try {
-			return await env.ASSETS.fetch(req);
-		} catch {
-			return new Response('Not found', { status: 404 });
-		}
+		return redirect(req, db, env);
 	},
 };
+
+async function serveStaticAssets(req: Request, staticAssets: Env['ASSETS']): Promise<Response> {
+	try {
+		return await staticAssets.fetch(req);
+	} catch {
+		return new Response('Not found', { status: 404 });
+	}
+}

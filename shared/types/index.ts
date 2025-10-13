@@ -17,3 +17,20 @@ export type UserPublic = {
 	name: string;
 	createdAt: number;
 };
+
+// Create Link types
+export const expireEntries = ['never', 'day', 'week', 'year'] as const;
+
+export type Expiry = (typeof expireEntries)[number] | number;
+
+export type CreateLinkRequest = {
+	shortCode: string;
+	destination: string;
+	expiresAt: Expiry;
+};
+
+export type RemoveLinkRequest = {
+	shortCode: string;
+};
+
+export type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };

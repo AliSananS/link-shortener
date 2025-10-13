@@ -1,17 +1,15 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
 import { nanoid } from 'nanoid';
-import { eq } from 'drizzle-orm';
+import { eq, InferSelectModel } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
-import { LoginRequest, SignupRequest } from '@/types';
+import { Database, LoginRequest, SignupRequest } from '@/types';
 import type { SignupResponseError, LoginResponseError, ApiResponse, UserPublic } from '@shared/types';
 import { env } from 'cloudflare:workers';
 
 const { users, sessions } = schema;
 
-type dbType = DrizzleD1Database<typeof schema> & {
-	$client: D1Database;
-};
+type dbType = Database;
 
 export function getCookie(cookie: string, name: string): string | null {
 	return (
@@ -229,6 +227,17 @@ export async function me(req: Request, db: any, env: Env): Promise<Response> {
 	const body: ApiResponse<UserPublic> = { success: true, data: payload };
 
 	return Response.json(body);
+}
+
+export async function getSession(req: Request, db: dbType, env: Env): Promise<InferSelectModel<(typeof schema)['sessions']> | null> {
+	const cookie = req.headers.get('Cookie');
+	if (!cookie) return null;
+
+	const sessionId = await decryptSession(getCookie(cookie, 'session'), env.SESSION_SECRET);
+	if (!sessionId) return null;
+	const session = await db.query.sessions.findFirst({ where: eq(sessions.id, sessionId) });
+	if (!session || session.expiresAt < Date.now()) return null;
+	return session;
 }
 
 function validateEmail(email: string): boolean {

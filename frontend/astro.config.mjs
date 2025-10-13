@@ -11,6 +11,18 @@ export default defineConfig({
 
 	vite: {
 		plugins: [tailwindcss()],
+		server: {
+			proxy:
+				process.env.NODE_ENV === 'development'
+					? {
+							'/api': {
+								target: 'http://localhost:8787',
+								changeOrigin: true,
+								rewrite: (path) => path.replace(/^\/api/, '/api'),
+							},
+					  }
+					: undefined,
+		},
 	},
 	outDir: 'out',
 	output: 'static',

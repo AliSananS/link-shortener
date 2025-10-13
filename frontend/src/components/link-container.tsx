@@ -4,7 +4,7 @@ import LinkItem from '@/components/link-item';
 import { useState } from 'react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { type Expiry, expireEntries } from '@/types';
+import { type Expiry, expireEntries } from '@shared/types';
 import { Button } from '@/components/ui/button';
 
 const LinkContainer = () => {

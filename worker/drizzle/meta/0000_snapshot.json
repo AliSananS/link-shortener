@@ -1,14 +1,14 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f8b7de58-6408-4afc-ab86-f522b1b4401b",
+  "id": "e67ad975-5a28-460b-a987-4c2a8626d86b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "links": {
       "name": "links",
       "columns": {
-        "key": {
-          "name": "key",
+        "short_code": {
+          "name": "short_code",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -25,7 +25,7 @@
           "name": "expires_at",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
