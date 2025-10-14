@@ -3,18 +3,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Copy, Clipboard } from 'lucide-react';
-import { type ChangeEventHandler, type ReactNode, useRef } from 'react';
+import { type ChangeEvent, type ChangeEventHandler, type ReactNode, useRef } from 'react';
+import { toast } from 'sonner';
 import { type ClassNameValue } from 'tailwind-merge';
 
 type Props = {
 	variant: 'long' | 'short';
-	shortUrl: URL;
+	shortUrl?: URL;
+	longUrl?: string;
 	longPlaceholder?: string;
 	className?: ClassNameValue;
-	onValueChange?: ChangeEventHandler<HTMLInputElement> | undefined;
+	onLongLinkChange?: (change: string) => void;
 };
 
-const LinkItem = ({ variant, shortUrl, longPlaceholder = 'Paste long link here...', className, onValueChange }: Props) => {
+const LinkItem = ({
+	variant,
+	shortUrl,
+	longUrl,
+	longPlaceholder = 'Paste long link here...',
+	className,
+	onLongLinkChange: onValueChange,
+}: Props) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const variants = {
 		long: 'text-muted-foreground font-normal truncate',
@@ -22,22 +31,31 @@ const LinkItem = ({ variant, shortUrl, longPlaceholder = 'Paste long link here..
 	} as const;
 
 	const icons = {
-		short: <Copy size={24} />,
+		short: (
+			<button
+				className="cursor-pointer *:outline-none"
+				onClick={() => {
+					shortUrl &&
+						navigator.clipboard
+							.writeText(shortUrl?.href.toString())
+							.then(() => toast.success('Copied to clipboard!'))
+							.catch(() => toast.error('Failed to copy'));
+				}}
+			>
+				<Copy size={24} />
+			</button>
+		),
 		long: (
-			<Button
-				type="button"
+			<button
 				aria-label="Paste from clipboard"
 				className="focus:outline-none cursor-pointer"
-				variant="ghost"
 				onClick={async () => {
-					if (inputRef.current) {
-						const text = await navigator.clipboard.readText();
-						inputRef.current.value = text;
-					}
+					const text = await navigator.clipboard.readText();
+					onValueChange && onValueChange(text);
 				}}
 			>
 				<Clipboard size={24} />
-			</Button>
+			</button>
 		),
 	} as Record<typeof variant, ReactNode>;
 
@@ -49,19 +67,19 @@ const LinkItem = ({ variant, shortUrl, longPlaceholder = 'Paste long link here..
 				className
 			)}
 		>
-			{variant === 'long' ? (
-				<input
-					ref={inputRef}
-					placeholder={longPlaceholder}
-					onChange={onValueChange}
-					className="[*]:bg-transparent [*]:ring-0 outline-0 border-none resize-none text-2xl shadow-none w-full"
-					style={{ fontSize: 16 }}
-				/>
-			) : (
+			{variant === 'short' && shortUrl ? (
 				<div className="flex flex-row gap-0 items-center">
 					{shortUrl.origin}
 					<span className="text-muted-foreground">{shortUrl.pathname}</span>
 				</div>
+			) : (
+				<input
+					onChange={(e) => onValueChange && onValueChange(e.currentTarget.value)}
+					placeholder={longPlaceholder}
+					value={longUrl}
+					className="[*]:bg-transparent [*]:ring-0 outline-0 border-none resize-none text-2xl shadow-none w-full"
+					style={{ fontSize: 16 }}
+				/>
 			)}
 			{icons[variant]}
 		</div>

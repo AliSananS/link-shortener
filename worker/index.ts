@@ -2,8 +2,8 @@ import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
 import { login, logout, signup, me, getSession } from '@/session';
 import { createLink, redirect, removeLink } from '@/links';
-
-const protectedRoutes = ['/api/me', '/api/logout', '/api/create-link', '/remove-link'] as const;
+import { PROTECTED_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
+import type { WorkerEndpoint, ProtectedEndpoint } from '@shared/types';
 
 export default {
 	async fetch(req: Request, env: Env): Promise<Response> {
@@ -14,23 +14,23 @@ export default {
 
 		// API routes
 		if (path.startsWith('/api/')) {
-			switch (path) {
-				case '/api/signup':
-					if (method === 'POST') return signup(req, db);
-					break;
+			switch (path as WorkerEndpoint) {
 				case '/api/login':
 					if (method === 'POST') return login(req, db, env);
+					break;
+				case '/api/signup':
+					if (method === 'POST') return signup(req, db);
 					break;
 			}
 
 			// Protected routes
-			if (protectedRoutes.includes(path as (typeof protectedRoutes)[number])) {
+			if (PROTECTED_ENDPOINTS.includes(path as ProtectedEndpoint)) {
 				const session = await getSession(req, db, env);
 				if (!session) {
 					return new Response('Unauthorized', { status: 401 });
 				}
 
-				switch (path as (typeof protectedRoutes)[number]) {
+				switch (path as ProtectedEndpoint) {
 					case '/api/logout':
 						if (method === 'POST') return logout(req, db);
 						break;
@@ -41,9 +41,7 @@ export default {
 						if (method === 'POST') return createLink(req, db, env, session);
 						break;
 					case '/remove-link':
-						if (method === 'DELETE') {
-							return removeLink(req, db, env, session);
-						}
+						if (method === 'DELETE') return removeLink(req, db, env, session);
 				}
 			}
 

@@ -1,3 +1,5 @@
+import { PROTECTED_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
+
 export type SignupResponseError = 'EMAIL_EXISTS' | 'INVALID_EMAIL' | 'WEAK_PASSWORD' | 'MISSING_CREDENTIALS' | 'TOO_MANY_ATTEMPTS';
 
 export type LoginResponseError = 'EMAIL_NOT_FOUND' | 'INVALID_CREDENTIALS' | 'MISSING_CREDENTIALS' | 'TOO_MANY_ATTEMPTS' | 'USER_DISABLED';
@@ -24,9 +26,13 @@ export const expireEntries = ['never', 'day', 'week', 'year'] as const;
 export type Expiry = (typeof expireEntries)[number] | number;
 
 export type CreateLinkRequest = {
-	shortCode: string;
+	shortCode?: string;
 	destination: string;
 	expiresAt: Expiry;
+};
+
+export type GetLinkRequest = {
+	shortCode: string;
 };
 
 export type RemoveLinkRequest = {
@@ -34,3 +40,7 @@ export type RemoveLinkRequest = {
 };
 
 export type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
+
+export type WorkerEndpoint = (typeof WORKER_ENDPOINTS)[number];
+
+export type ProtectedEndpoint = (typeof PROTECTED_ENDPOINTS)[number];

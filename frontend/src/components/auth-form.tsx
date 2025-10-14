@@ -148,7 +148,7 @@ export default function AuthForm() {
 					setTimeout(() => (window.location.href = '/'), 400);
 				} else {
 					// on login, reload page or navigate to dashboard
-					setTimeout(() => (window.location.href = '/dashboard'), 200);
+					setTimeout(() => (window.location.href = '/'), 200);
 				}
 			} else {
 				// some servers may return 2xx but indicate failure in body
