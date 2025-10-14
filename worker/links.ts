@@ -67,7 +67,13 @@ export async function redirect(req: Request, db: Database, env: Env): Promise<Re
 	const url = new URL(req.url);
 	const path = url.pathname.slice(1); // remove leading "/"
 
-	if (path.length < 1) return new Response(`<h1>Invalid Link</h1>`, { status: 404 });
+	if (path.length < 1)
+		return new Response(`<h1>Invalid Link</h1>`, {
+			status: 404,
+			headers: {
+				'Content-Type': 'text/html',
+			},
+		});
 
 	const kv = env.kv;
 	const destination = await kv.get(path);
@@ -86,7 +92,13 @@ export async function redirect(req: Request, db: Database, env: Env): Promise<Re
 		return Response.redirect(destination, 301);
 	}
 
-	if (!destination) return new Response(`<h1>Link not found or expired</h1>`, { status: 404 });
+	if (!destination)
+		return new Response(`<h1>Link not found or expired</h1>`, {
+			status: 404,
+			headers: {
+				'Content-Type': 'text/html',
+			},
+		});
 	return new Response('Link not found', { status: 404 });
 }
 
