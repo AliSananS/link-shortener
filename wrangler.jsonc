@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "link-shortener",
+	"name": "links",
 	"main": "worker/index.ts",
 	"compatibility_date": "2025-10-04",
 	// "compatibility_flags": ["nodejs_compat"],
