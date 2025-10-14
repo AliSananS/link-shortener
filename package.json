@@ -12,6 +12,7 @@
 		"build": "bun run build:frontend && bun run build:worker",
 		"start": "wrangler dev",
 		"test": "vitest",
+		"type-check": "bunx tsc && bunx --cwd=frontend tsc",
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
