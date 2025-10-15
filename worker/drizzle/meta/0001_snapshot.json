@@ -1,22 +1,22 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "3b08f74a-756d-45d7-9477-37ce237d9086",
-  "prevId": "e67ad975-5a28-460b-a987-4c2a8626d86b",
+  "id": "e0d0f440-312e-4e1a-ab4b-3c4929280c7e",
+  "prevId": "5e98d04a-5f1c-4529-9d53-905ef748ddd2",
   "tables": {
     "analytics": {
       "name": "analytics",
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
-        "short_code": {
-          "name": "short_code",
-          "type": "text",
+        "link_id": {
+          "name": "link_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -45,15 +45,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "analytics_short_code_links_short_code_fk": {
-          "name": "analytics_short_code_links_short_code_fk",
+        "analytics_link_id_links_id_fk": {
+          "name": "analytics_link_id_links_id_fk",
           "tableFrom": "analytics",
           "tableTo": "links",
           "columnsFrom": [
-            "short_code"
+            "link_id"
           ],
           "columnsTo": [
-            "short_code"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -66,6 +66,13 @@
     "links": {
       "name": "links",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
         "short_code": {
           "name": "short_code",
           "type": "text",
@@ -98,7 +105,7 @@
           "name": "visits_count",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false,
           "default": 0
         }

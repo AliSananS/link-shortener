@@ -8,7 +8,7 @@ export const WORKER_ENDPOINTS = [
 	'/api/me',
 	'/api/logout',
 	'/api/create-link',
-	'/remove-link',
-	'get-link',
+	'/api/remove-link',
+	'/api/get-link',
 ] as const;
 export const PROTECTED_ENDPOINTS = ['/api/me', '/api/logout', '/api/create-link', '/remove-link'] as const;

@@ -1,12 +1,12 @@
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
 import { login, logout, signup, me, getSession } from '@/session';
-import { createLink, redirect, removeLink } from '@/links';
+import { createLink, getLink, redirect, removeLink } from '@/links';
 import { PROTECTED_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
 import type { WorkerEndpoint, ProtectedEndpoint } from '@shared/types';
 
 export default {
-	async fetch(req: Request, env: Env): Promise<Response> {
+	async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(req.url);
 		const db = drizzle(env.db, { schema });
 		const path = url.pathname;
@@ -21,6 +21,8 @@ export default {
 				case '/api/signup':
 					if (method === 'POST') return signup(req, db);
 					break;
+				case '/api/get-link':
+					if (method === 'POST') return getLink(req, env);
 			}
 
 			// Protected routes
@@ -48,7 +50,7 @@ export default {
 			return new Response('Bad request', { status: 400 });
 		}
 
-		return redirect(req, db, env);
+		return redirect(req, db, env, ctx);
 	},
 };
 

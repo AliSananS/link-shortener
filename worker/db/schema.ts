@@ -16,6 +16,7 @@ export const sessions = sqliteTable('sessions', {
 });
 
 export const links = sqliteTable('links', {
+	id: integer().primaryKey({ autoIncrement: true }).notNull(),
 	shortCode: text('short_code').notNull(), // short link key
 	userId: text('user_id').references(() => users.id),
 	expiresAt: integer('expires_at'),
@@ -24,11 +25,12 @@ export const links = sqliteTable('links', {
 });
 
 export const analytics = sqliteTable('analytics', {
-	id: text('id').primaryKey(),
-	shortCode: text('short_code')
+	id: integer().primaryKey({ autoIncrement: true }),
+	linkId: integer('link_id')
 		.notNull()
-		.references(() => links.shortCode),
+		.references(() => links.id),
 	timestamp: integer('timestamp').notNull(),
 	userAgent: text('user_agent'),
 	ipAddress: text('ip_address'),
+	location: text(),
 });

@@ -9,6 +9,7 @@
 		"build:worker": "wrangler build",
 		"build:frontend": "bun --cwd=frontend run build",
 		"build": "bun run build:frontend && bun run build:worker",
+		"db-migrate:remote": "bunx drizzle-kit generate && bunx drizzle-kit push",
 		"deploy": "wrangler deploy",
 		"start": "wrangler dev",
 		"test": "vitest",
@@ -16,8 +17,10 @@
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
+		"@nanostores/react": "^1.0.0",
 		"bcryptjs": "^3.0.2",
 		"drizzle-orm": "^0.44.6",
+		"nanostores": "^1.0.1",
 		"zod": "^4.1.11"
 	},
 	"devDependencies": {

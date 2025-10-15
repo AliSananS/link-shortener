@@ -6,7 +6,6 @@ import AuthForm from '@/components/auth-form';
 <Layout>
 	<script>
 		import type { ApiResponse } from '@shared/types';
-		import { toast } from 'sonner';
 
 		fetch('/api/me')
 			.then((res) => res.json())
@@ -18,9 +17,6 @@ import AuthForm from '@/components/auth-form';
 				if (data.success) {
 					window.location.href = '/';
 				}
-			})
-			.catch(() => {
-				toast.error('Error getting info');
 			});
 	</script>
 	<div class="flex flex-col items-center justify-center w-full h-screen max-w-6xl">

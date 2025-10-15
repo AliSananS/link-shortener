@@ -4,6 +4,12 @@ export type SignupResponseError = 'EMAIL_EXISTS' | 'INVALID_EMAIL' | 'WEAK_PASSW
 
 export type LoginResponseError = 'EMAIL_NOT_FOUND' | 'INVALID_CREDENTIALS' | 'MISSING_CREDENTIALS' | 'TOO_MANY_ATTEMPTS' | 'USER_DISABLED';
 
+export type CreateLinkResponseError = 'INVALID_SHORT_CODE' | 'MISSING_SHORT_CODE' | 'UNAUTHORIZED' | 'SHORT_CODE_ALREADY_EXISTS';
+
+export type GetLinkResponseError = 'MISSING_SHORT_CODE' | 'INVALID_SHORT_CODE';
+
+export type DeleteLinkResponseError = 'LINK_NOT_FOUND' | 'UNAUTHORIZED';
+
 // Generic API response shape used by both client and server.
 export type ApiResponse<T = unknown, E = string> = {
 	success: boolean;
@@ -25,21 +31,21 @@ export const expireEntries = ['never', 'day', 'week', 'year'] as const;
 
 export type Expiry = (typeof expireEntries)[number] | number;
 
-export type CreateLinkRequest = {
+export type CreateLinkApiRequest = {
 	shortCode?: string;
 	destination: string;
 	expiresAt: Expiry;
 };
 
-export type GetLinkRequest = {
+export type GetLinkApiRequest = {
 	shortCode: string;
 };
 
-export type RemoveLinkRequest = {
+export type RemoveLinkApiRequest = {
 	shortCode: string;
 };
 
-export type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
+export type Result<T, E = Error | string> = { ok: true; value: T } | { ok: false; error: E };
 
 export type WorkerEndpoint = (typeof WORKER_ENDPOINTS)[number];
 
