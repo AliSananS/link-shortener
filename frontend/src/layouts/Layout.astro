@@ -2,14 +2,10 @@
 import Nav from '@/components/nav';
 import { Toaster } from '@/components/ui/sonner';
 import '@/styles/global.css';
+import { ThemeSwitch } from 'astro-color-scheme';
 ---
 
 <script is:inline>
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-		if (!localStorage.getItem('theme')) {
-			document.documentElement.classList.toggle('dark', e.matches);
-		}
-	});
 	const getThemePreference = () => {
 		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
 			return localStorage.getItem('theme');

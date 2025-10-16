@@ -44,6 +44,7 @@ export default function Nav() {
 				Link Shortener
 			</a>
 			<div className="flex flex-row justify-end gap-4 [&>*]:cursor-pointer [&>*]:hover:underline">
+				{/* <ThemeSwitch defaultTheme="system" /> */}
 				{navItems.map((link) =>
 					link.name === 'login' && $isCheckingSession ? (
 						<div className="flex items-center justify-center">

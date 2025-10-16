@@ -1,4 +1,4 @@
-import LinkItem from '@/components/link-item';
+import LinkInput from '@/components/link-input';
 import { useEffect, useState, type ChangeEventHandler } from 'react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
@@ -36,6 +36,10 @@ const LinkContainer = ({ siteData }: { siteData: any }) => {
 		}
 
 		setIsLoading(true);
+
+		if (!(longUrl.startsWith('http://') || longUrl.startsWith('https://'))) {
+			setLongUrl('http://' + longUrl);
+		}
 
 		const payload: CreateLinkApiRequest = {
 			shortCode: shortUrlCode,
@@ -105,14 +109,14 @@ const LinkContainer = ({ siteData }: { siteData: any }) => {
 
 	return (
 		<div className="flex flex-col gap-8 items-center transition-all duration-300 ease-in-out">
-			<LinkItem variant="long" longUrl={longUrl} onLongLinkChange={setLongUrl} />
+			<LinkInput variant="long" longUrl={longUrl} onLongLinkChange={setLongUrl} />
 
 			<div className="flex flex-row items-center justify-center gap-4 px-8 text-muted-foreground">
 				<Separator />
 				<p className="text-sm text-nowrap">Becomes 👇</p>
 				<Separator />
 			</div>
-			<LinkItem
+			<LinkInput
 				variant="short"
 				shortUrl={baseUrl}
 				shortCode={shortUrlCode}

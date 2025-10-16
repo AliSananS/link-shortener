@@ -15,7 +15,7 @@ type Props = {
 	onShortUrlChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
-const LinkItem = ({
+const LinkInput = ({
 	variant,
 	shortUrl,
 	shortCode,
@@ -39,7 +39,7 @@ const LinkItem = ({
 				onClick={() => {
 					shortUrl &&
 						navigator.clipboard
-							.writeText(shortUrl)
+							.writeText(`${shortUrl}${shortCode}`)
 							.then(() => toast.success('Copied to clipboard!'))
 							.catch(() => toast.error('Failed to copy'));
 
@@ -105,4 +105,4 @@ const LinkItem = ({
 	);
 };
 
-export default LinkItem;
+export default LinkInput;
