@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
-import navItems from '@/lib/nav-items';
 import type { ApiResponse } from '@shared/types';
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
+import navItems from '@/lib/nav-items';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
@@ -44,14 +44,25 @@ export default function Nav() {
 				Link Shortener
 			</a>
 			<div className="flex flex-row justify-end gap-4 [&>*]:cursor-pointer [&>*]:hover:underline">
-				{/* <ThemeSwitch defaultTheme="system" /> */}
-				{navItems.map((link) =>
-					link.name === 'login' && $isCheckingSession ? (
+				{/* Main navigation items */}
+				{navItems.map((link) => (
+					<a
+						key={link.name}
+						href={link.href}
+						className={`text-base ${pathname.includes(link.href) ? 'font-semibold text-foreground' : 'font-normal text-foreground/90'}`}
+					>
+						{link.title}
+					</a>
+				))}
+
+				{/* Auth button with loading state */}
+				<div className="w-16 flex justify-end">
+					{$isCheckingSession ? (
 						<div className="flex items-center justify-center">
 							<Spinner />
 						</div>
 					) : $isLoggedIn ? (
-						<Dialog key={link.name} open={isDialogOpen}>
+						<Dialog open={isDialogOpen}>
 							<DialogTrigger>
 								<button className="text-base cursor-pointer hover:underline" onClick={() => setIsDialogOpen(true)}>
 									Logout
@@ -75,14 +86,13 @@ export default function Nav() {
 						</Dialog>
 					) : (
 						<a
-							key={link.name}
-							href={link.href}
-							className={`text-base ${pathname.includes(link.href) ? 'font-semibold text-foreground' : 'font-normal text-foreground/90'}`}
+							href="/login"
+							className={`text-base ${pathname.includes('/login') ? 'font-semibold text-foreground' : 'font-normal text-foreground/90'}`}
 						>
-							{link.title}
+							Login
 						</a>
-					)
-				)}
+					)}
+				</div>
 			</div>
 		</div>
 	);

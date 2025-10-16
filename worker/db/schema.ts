@@ -18,6 +18,7 @@ export const sessions = sqliteTable('sessions', {
 export const links = sqliteTable('links', {
 	id: integer().primaryKey({ autoIncrement: true }).notNull(),
 	shortCode: text('short_code').notNull(), // short link key
+	destination: text().notNull(), // original URL
 	userId: text('user_id').references(() => users.id),
 	expiresAt: integer('expires_at'),
 	createdAt: integer('created_at').notNull(),

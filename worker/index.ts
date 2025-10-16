@@ -56,9 +56,9 @@ export default {
 		if (path === '/' && method === 'GET') {
 			const session = await getSession(req, db, env);
 			if (!session) {
-				const dashUrl = url;
-				dashUrl.pathname = '/landing';
-				return env.ASSETS.fetch(dashUrl);
+				const landingUrl = url;
+				landingUrl.pathname = '/landing';
+				return env.ASSETS.fetch(landingUrl);
 			}
 		}
 		// Serve static assets
