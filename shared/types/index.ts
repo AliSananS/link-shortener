@@ -1,4 +1,4 @@
-import { PROTECTED_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
+import { PROTECTED_ENDPOINTS, UI_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
 
 export type SignupResponseError = 'EMAIL_EXISTS' | 'INVALID_EMAIL' | 'WEAK_PASSWORD' | 'MISSING_CREDENTIALS' | 'TOO_MANY_ATTEMPTS';
 
@@ -50,3 +50,5 @@ export type Result<T, E = Error | string> = { ok: true; value: T } | { ok: false
 export type WorkerEndpoint = (typeof WORKER_ENDPOINTS)[number];
 
 export type ProtectedEndpoint = (typeof PROTECTED_ENDPOINTS)[number];
+
+export type UiEndpoint = (typeof UI_ENDPOINTS)[number];

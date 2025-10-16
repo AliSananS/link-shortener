@@ -2,8 +2,8 @@ import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
 import { login, logout, signup, me, getSession } from '@/session';
 import { createLink, getLink, redirect, removeLink } from '@/links';
-import { PROTECTED_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
-import type { WorkerEndpoint, ProtectedEndpoint } from '@shared/types';
+import { PROTECTED_ENDPOINTS, UI_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
+import type { WorkerEndpoint, ProtectedEndpoint, UiEndpoint } from '@shared/types';
 
 export default {
 	async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -59,7 +59,7 @@ export default {
 			}
 		}
 		// Serve static assets
-		return serveStaticAssets(req, env.ASSETS);
+		if (UI_ENDPOINTS.includes(path as UiEndpoint) && method === 'GET') return serveStaticAssets(req, env.ASSETS);
 
 		// Redirect short links
 		return redirect(req, db, env, ctx);
