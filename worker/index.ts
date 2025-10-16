@@ -59,7 +59,7 @@ export default {
 			}
 		}
 		// Serve static assets
-		// return serveStaticAssets(req, env.ASSETS);
+		return serveStaticAssets(req, env.ASSETS);
 
 		// Redirect short links
 		return redirect(req, db, env, ctx);
