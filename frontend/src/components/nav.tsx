@@ -5,27 +5,19 @@ import { useEffect, useState, useTransition } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
+import { isLoggedIn, isCheckingSession } from '@/store';
+import { useStore } from '@nanostores/react';
 
 export default function Nav() {
 	const [pathname, setPathname] = useState<string>('');
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+	const $isLoggedIn = useStore(isLoggedIn);
+	const $isCheckingSession = useStore(isCheckingSession);
+
 	useEffect(() => {
 		typeof window !== undefined && setPathname(window.location.pathname);
-		fetch('/api/me')
-			.then((res) => res.json())
-			.then((data: ApiResponse) => {
-				if (data.success) {
-					setIsLoggedIn(true);
-				} else {
-					setIsLoggedIn(false);
-				}
-			})
-			.catch(() => {
-				setIsLoggedIn(false);
-			});
 	}, []);
 
 	function handleLogout() {
@@ -34,7 +26,7 @@ export default function Nav() {
 			.then((res) => res.json())
 			.then((data: ApiResponse) => {
 				data.success;
-				setIsLoggedIn(false);
+				isLoggedIn.set(false);
 				window.location.href = '/login';
 				setIsLoading(false);
 				setIsDialogOpen(false);
@@ -53,7 +45,11 @@ export default function Nav() {
 			</a>
 			<div className="flex flex-row justify-end gap-4 [&>*]:cursor-pointer [&>*]:hover:underline">
 				{navItems.map((link) =>
-					link.name === 'login' && isLoggedIn ? (
+					link.name === 'login' && $isCheckingSession ? (
+						<div className="flex items-center justify-center">
+							<Spinner />
+						</div>
+					) : $isLoggedIn ? (
 						<Dialog key={link.name} open={isDialogOpen}>
 							<DialogTrigger>
 								<button className="text-base cursor-pointer hover:underline" onClick={() => setIsDialogOpen(true)}>

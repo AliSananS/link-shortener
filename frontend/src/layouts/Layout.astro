@@ -5,6 +5,11 @@ import '@/styles/global.css';
 ---
 
 <script is:inline>
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+		if (!localStorage.getItem('theme')) {
+			document.documentElement.classList.toggle('dark', e.matches);
+		}
+	});
 	const getThemePreference = () => {
 		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
 			return localStorage.getItem('theme');
@@ -21,6 +26,27 @@ import '@/styles/global.css';
 		});
 		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 	}
+</script>
+
+<script>
+	import { isLoggedIn, isCheckingSession } from '@/store';
+	isCheckingSession.set(true);
+
+	// Check initial login state
+	fetch('/api/me')
+		.then((res) => res.json())
+		.then((data) => {
+			isCheckingSession.set(false);
+			if (data.success) {
+				isLoggedIn.set(true);
+			} else {
+				isLoggedIn.set(false);
+			}
+		})
+		.catch(() => {
+			isCheckingSession.set(false);
+			isLoggedIn.set(false);
+		});
 </script>
 
 <html lang="en">

@@ -49,7 +49,19 @@ export default {
 
 			return new Response('Bad request', { status: 400 });
 		}
+		// Render landing page if not logged in
+		if (path === '/' && method === 'GET') {
+			const session = await getSession(req, db, env);
+			if (!session) {
+				const dashUrl = url;
+				dashUrl.pathname = '/landing';
+				return env.ASSETS.fetch(dashUrl);
+			}
+		}
+		// Serve static assets
+		// return serveStaticAssets(req, env.ASSETS);
 
+		// Redirect short links
 		return redirect(req, db, env, ctx);
 	},
 };
