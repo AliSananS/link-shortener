@@ -1,8 +1,8 @@
 const navItems = [
 	{
-		title: 'Login',
-		name: 'login',
-		href: '/login',
+		title: 'Dashboard',
+		name: 'dashboard',
+		href: '/dashboard',
 	},
 ] as const;
 
