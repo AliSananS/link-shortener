@@ -37,6 +37,12 @@ export async function createLink(req: Request, db: Database, env: Env, session: 
 		}
 	}
 
+	try {
+		z.url().parse(destination);
+	} catch (error) {
+		return new Response(JSON.stringify({ success: false, error: 'Invalid URL' } satisfies ApiResponse), { status: 400 });
+	}
+
 	const expiry: number | false = typeof expiresAt === 'number' ? expiresAt : expiresAt === 'never' ? false : expiryMap[expiresAt];
 
 	if (await kv.get(shortCode)) {

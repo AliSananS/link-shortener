@@ -26,6 +26,7 @@ const LinkContainer = ({ siteData }: { siteData: any }) => {
 	}, []);
 
 	async function handleCreateLink() {
+		let url = longUrl;
 		try {
 			shortCodeSchema.parse(shortUrlCode);
 		} catch (error) {
@@ -37,13 +38,13 @@ const LinkContainer = ({ siteData }: { siteData: any }) => {
 
 		setIsLoading(true);
 
-		if (!(longUrl.startsWith('http://') || longUrl.startsWith('https://'))) {
-			setLongUrl('http://' + longUrl);
+		if (!(url.startsWith('http://') || url.startsWith('https://'))) {
+			url = 'http://' + url;
 		}
 
 		const payload: CreateLinkApiRequest = {
 			shortCode: shortUrlCode,
-			destination: longUrl,
+			destination: url,
 			expiresAt: expiry,
 		};
 
@@ -61,7 +62,7 @@ const LinkContainer = ({ siteData }: { siteData: any }) => {
 					setLongUrl('');
 					setExpiry('never');
 				} else {
-					toast.error('Error creating link', { description: data.error || undefined });
+					toast.error('Error creating link', { description: data.message || data.error || undefined });
 				}
 				setIsLoading(false);
 			})

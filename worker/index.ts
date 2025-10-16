@@ -3,7 +3,7 @@ import * as schema from '@/db/schema';
 import { login, logout, signup, me, getSession } from '@/session';
 import { createLink, getLink, redirect, removeLink } from '@/links';
 import { PROTECTED_ENDPOINTS, UI_ENDPOINTS, WORKER_ENDPOINTS } from '@shared/constants';
-import type { WorkerEndpoint, ProtectedEndpoint, UiEndpoint } from '@shared/types';
+import type { WorkerEndpoint, ProtectedEndpoint, UiEndpoint, ApiResponse } from '@shared/types';
 
 export default {
 	async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -29,7 +29,10 @@ export default {
 			if (PROTECTED_ENDPOINTS.includes(path as ProtectedEndpoint)) {
 				const session = await getSession(req, db, env);
 				if (!session) {
-					return new Response('Unauthorized', { status: 401 });
+					return new Response(
+						JSON.stringify({ success: false, error: 'Unauthorized', message: 'Login or signup required.' } satisfies ApiResponse),
+						{ status: 401 }
+					);
 				}
 
 				switch (path as ProtectedEndpoint) {
